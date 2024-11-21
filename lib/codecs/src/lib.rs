@@ -44,3 +44,15 @@ pub enum MetricTagValues {
     /// All tags are exposed as arrays of either string or null values.
     Full,
 }
+
+/// The user configuration to choose the language encoding.
+#[configurable_component]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum LangValues {
+    /// UTF-8 encoding
+    #[default]
+    UTF8,
+    /// EUC-KR encoding
+    EucKr,
+}

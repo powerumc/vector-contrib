@@ -11125,6 +11125,7 @@ dependencies = [
  "db-key",
  "derivative",
  "dyn-clone",
+ "encoding_rs",
  "enrichment",
  "enumflags2",
  "env-test-util",

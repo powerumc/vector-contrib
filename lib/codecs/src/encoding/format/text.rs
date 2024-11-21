@@ -4,7 +4,7 @@ use tokio_util::codec::Encoder;
 use vector_config_macros::configurable_component;
 use vector_core::{config::DataType, event::Event, schema};
 
-use crate::MetricTagValues;
+use crate::{LangValues, MetricTagValues};
 
 /// Config used to build a `TextSerializer`.
 #[configurable_component]
@@ -16,12 +16,16 @@ pub struct TextSerializerConfig {
     /// metric.  When set to `full`, all metric tags are exposed as separate assignments.
     #[serde(default, skip_serializing_if = "vector_core::serde::is_default")]
     pub metric_tag_values: MetricTagValues,
+
+    /// Controls the language encoding.
+    #[serde(default)]
+    pub lang: Option<LangValues>,
 }
 
 impl TextSerializerConfig {
     /// Creates a new `TextSerializerConfig`.
     pub const fn new(metric_tag_values: MetricTagValues) -> Self {
-        Self { metric_tag_values }
+        Self { metric_tag_values, lang: None }
     }
 
     /// Build the `TextSerializer` from this configuration.
@@ -118,6 +122,7 @@ mod tests {
         let buffer = serialize(
             TextSerializerConfig {
                 metric_tag_values: MetricTagValues::Full,
+                lang: None,
             },
             metric2(),
         );
@@ -132,6 +137,7 @@ mod tests {
         let buffer = serialize(
             TextSerializerConfig {
                 metric_tag_values: MetricTagValues::Single,
+                lang: None,
             },
             metric2(),
         );

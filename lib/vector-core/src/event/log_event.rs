@@ -560,12 +560,29 @@ impl LogEvent {
 
     /// Fetches the `message` of the event. This is either from the "message" semantic meaning (Vector namespace)
     /// or from the message key set on the "Global Log Schema" (Legacy namespace).
-    pub fn get_message(&self) -> Option<&Value> {
+    pub fn get_message(&self) -> Option<Value> {
         match self.namespace() {
-            LogNamespace::Vector => self.get_by_meaning("message"),
-            LogNamespace::Legacy => log_schema()
-                .message_key_target_path()
-                .and_then(|key| self.get(key)),
+            LogNamespace::Vector => {
+                self.get_by_meaning("message").cloned()
+            },
+            LogNamespace::Legacy => {
+                let log = log_schema()
+                    .message_key_target_path()
+                    .and_then(|key| self.get(key));
+                let _str = log.unwrap().as_str().unwrap().to_string();
+                println!("log: {:?}, _str: {:?}", log, _str);
+
+                // change encoding euc-kr to utf-8
+                let _bytes = log.unwrap().as_bytes().unwrap();
+                let (decoded, _, error) = encoding_rs::EUC_KR.decode(_bytes);
+                println!("decoded: {:?}, error: {}", decoded, error);
+
+                let encoded_b = decoded.as_bytes();
+                let encoded_b = Bytes::copy_from_slice(encoded_b);
+
+                Some(Value::Bytes(encoded_b))
+                // log
+            },
         }
     }
 
