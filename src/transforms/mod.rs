@@ -29,6 +29,7 @@ pub mod route;
 pub mod tag_cardinality_limit;
 #[cfg(feature = "transforms-throttle")]
 pub mod throttle;
+pub mod ruby;
 
 pub use vector_lib::transform::{
     FunctionTransform, OutputBuffer, SyncTransform, TaskTransform, Transform, TransformOutputs,
