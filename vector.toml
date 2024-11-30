@@ -1,0 +1,55 @@
+[sources.stdin]
+type = "stdin"
+
+[transforms.my_lua]
+type = "lua"
+inputs = ["stdin"]
+version = "2"
+search_dirs = ["/opt/homebrew/lib/lua/5.4"]
+
+source = """
+local iconv = require("iconv")
+local converter = iconv.new("utf-8", "euc-kr")
+
+function process(event, emit)
+    local message = event.log.message
+    local converter = iconv.new("utf-8", "euc-kr")
+
+    new_message = converter:iconv(message)
+    event.log.message = new_message
+
+    emit(event)
+end
+"""
+hooks.process = "process"
+
+
+[sinks.sink_socket]
+type = "socket"
+inputs = ["my_lua"]
+mode = "tcp"
+address = "127.0.0.1:9091"
+encoding.codec = "text"
+
+#[sinks.sink_socket.encoding]
+#codec = "text"
+#
+#[transforms.trans]
+#type = "ruby"
+#inputs = ["stdin"]
+#source = """
+#puts '💎💎💎 hello ruby 💎💎💎'
+#"""
+
+#[.trans]
+#type = "lua"
+#inputs = ["stdin"]
+#version = "2"
+#source = """
+#function hook_process(event, emit)
+#    print("hook_process")
+#    event.hello = "world"
+#    emit(event)
+#end
+#"""
+#hooks.process = "hook_process"
